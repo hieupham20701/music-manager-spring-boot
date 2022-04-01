@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.musicmanager.dto.MusicDTO;
 import com.musicmanager.entity.Music;
 import com.musicmanager.message.ResponeMessage;
 import com.musicmanager.message.ResponeMusic;
@@ -48,18 +47,27 @@ public class MusicAPI {
 		}
 	}
 
-	@PutMapping(value = "/new")
-	public MusicDTO updateMusic(@RequestBody MusicDTO model) {
-		return model;
+	@PutMapping(value = "/upload/{id}")
+	public ResponseEntity<ResponeMessage> updateMusic(@RequestParam("file") MultipartFile multipartFile,
+			@RequestParam("name") String name, @RequestParam("generes") String generes, @PathVariable String id) {
+		String message = "";
+		try {
+			musicService.update(multipartFile, name, generes, Long.parseLong(id));
+			message = "Update Success";
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponeMessage(message));
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			message = "Could not update";
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponeMessage(message));
+		}
 	}
 
-	@DeleteMapping(value = "/delete/{id}")
+	@DeleteMapping(value = "/delete")
 	public ResponseEntity<ResponeMessage> deleteMusic(@RequestBody long[] id) {
 		String message = "";
 		try {
-			for (long i : id) {
-				musicService.deleteMusic(i);
-			}
+			musicService.deleteMusic(id);
 			message = "Delete Success";
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponeMessage(message));
 		} catch (Exception e) {
@@ -81,6 +89,7 @@ public class MusicAPI {
 		}).collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(musics);
 	}
+
 	@GetMapping(value = "/files/{id}")
 	public ResponseEntity<byte[]> getFile(@PathVariable String id) {
 		Music music = musicService.getMusic(Long.parseLong(id));

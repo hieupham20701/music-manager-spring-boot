@@ -1,6 +1,7 @@
 package com.musicmanager.service.impl;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.musicmanager.convert.MusicConverter;
 import com.musicmanager.entity.Music;
 import com.musicmanager.repository.MusicRepository;
 import com.musicmanager.service.MusicService;
@@ -18,8 +18,6 @@ public class MusicServiceImpl implements MusicService {
 
 	@Autowired
 	private MusicRepository musicRepository;
-	@Autowired
-	private MusicConverter musicConverter;
 
 	@Override
 	public Music save(MultipartFile file, String name, String generes) throws IOException {
@@ -30,6 +28,7 @@ public class MusicServiceImpl implements MusicService {
 		music1.setFile(file.getBytes());
 		music1.setGeneres(generes);
 		music1.setFileName(fileName);
+		music1.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 		return musicRepository.save(music1);
 	}
 
@@ -45,8 +44,23 @@ public class MusicServiceImpl implements MusicService {
 	}
 
 	@Override
-	public void deleteMusic(Long id) {
-		musicRepository.delete(id);
+	public void deleteMusic(long[] ids) {
+		for (long item : ids) {
+			musicRepository.delete(item);
+		}
+	}
+
+	@Override
+	public Music update(MultipartFile file, String name, String generes, Long id) throws IOException {
+		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		Music music = musicRepository.findOne(id);
+		music.setName(name);
+		music.setFile(file.getBytes());
+		music.setDescription(file.getContentType());
+		music.setGeneres(generes);
+		music.setFileName(fileName);
+		music.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+		return musicRepository.save(music);
 	}
 
 }
