@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Built-By: intern.pquochieu
-Build-Jdk: 17.0.2
+Built-By: Admin
+Build-Jdk: 16.0.2
 Implementation-Title: music-manager
 Implementation-Version: 1.0
 Implementation-Vendor-Id: com.musicmanager
