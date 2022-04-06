@@ -51,6 +51,7 @@ public class MusicAPI {
 	public ResponseEntity<ResponeMessage> updateMusic(@RequestParam("file") MultipartFile multipartFile,
 			@RequestParam("name") String name, @RequestParam("generes") String generes, @PathVariable String id) {
 		String message = "";
+//		System.out.printf(name, multipartFile.toString(), generes);
 		try {
 			musicService.update(multipartFile, name, generes, Long.parseLong(id));
 			message = "Update Success";

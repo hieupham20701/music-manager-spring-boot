@@ -52,13 +52,19 @@ public class MusicServiceImpl implements MusicService {
 
 	@Override
 	public Music update(MultipartFile file, String name, String generes, Long id) throws IOException {
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
 		Music music = musicRepository.findOne(id);
-		music.setName(name);
-		music.setFile(file.getBytes());
-		music.setDescription(file.getContentType());
-		music.setGeneres(generes);
-		music.setFileName(fileName);
+		if (!name.equals(""))
+			music.setName(name);
+		if (file != null) {
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			music.setFile(file.getBytes());
+			music.setDescription(file.getContentType());
+			music.setFileName(fileName);
+		}
+		if (!generes.equals(""))
+			music.setGeneres(generes);
+
 		music.setModifiedDate(new Timestamp(System.currentTimeMillis()));
 		return musicRepository.save(music);
 	}
