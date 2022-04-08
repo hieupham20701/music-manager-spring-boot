@@ -85,7 +85,7 @@ public class MusicAPI {
 		List<ResponeMusic> musics = musicService.getAllMusic().map(dbFile -> {
 			String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
 					.path(dbFile.getId() + "").toUriString();
-			return new ResponeMusic(dbFile.getName(), fileDownloadUri, dbFile.getDescription(),
+			return new ResponeMusic(dbFile.getName(),dbFile.getGeneres(),fileDownloadUri, dbFile.getDescription(),
 					dbFile.getFile().length);
 		}).collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(musics);
