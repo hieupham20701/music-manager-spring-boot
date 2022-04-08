@@ -1,15 +1,17 @@
 package com.musicmanager.message;
 
 public class ResponeMusic {
-
+	
+	private Long id;
 	private String name;
 	private String url;
 	private String generes;
 	private String description;
 	private long size;
 
-	public ResponeMusic(String name, String generes, String url, String description, long size) {
+	public ResponeMusic(Long id, String name, String generes, String url, String description, long size) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.generes = generes;
 		this.url = url;
@@ -55,6 +57,15 @@ public class ResponeMusic {
 
 	public void setGeneres(String generes) {
 		this.generes = generes;
+	}
+	
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Override

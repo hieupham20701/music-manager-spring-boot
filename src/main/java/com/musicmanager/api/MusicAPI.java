@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +32,7 @@ public class MusicAPI {
 	@Autowired
 	private MusicService musicService;
 
-	@PostMapping(value = "/upload")
+	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<ResponeMessage> uploadMusic(@RequestParam("file") MultipartFile multipartFile,
 			@RequestParam("name") String name, @RequestParam("generes") String generes) {
 		String message = "";
@@ -85,7 +86,7 @@ public class MusicAPI {
 		List<ResponeMusic> musics = musicService.getAllMusic().map(dbFile -> {
 			String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
 					.path(dbFile.getId() + "").toUriString();
-			return new ResponeMusic(dbFile.getName(),dbFile.getGeneres(),fileDownloadUri, dbFile.getDescription(),
+			return new ResponeMusic(dbFile.getId(), dbFile.getName(),dbFile.getGeneres(),fileDownloadUri, dbFile.getDescription(),
 					dbFile.getFile().length);
 		}).collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(musics);
