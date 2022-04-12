@@ -25,7 +25,7 @@ import com.musicmanager.message.ResponeMessage;
 import com.musicmanager.message.ResponeMusic;
 import com.musicmanager.service.MusicService;
 
-@CrossOrigin
+@CrossOrigin (origins = "*" , allowedHeaders = "*")
 @RestController
 public class MusicAPI {
 

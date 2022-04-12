@@ -22,7 +22,7 @@ public class MusicServiceImpl implements MusicService {
 	@Override
 	public Music save(MultipartFile file, String name, String generes) throws IOException {
 		Music music1 = new Music();
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		String fileName = StringUtils.cleanPath(file.getOriginalFilename()); 
 		music1.setName(name);
 		music1.setDescription(file.getContentType());
 		music1.setFile(file.getBytes());
