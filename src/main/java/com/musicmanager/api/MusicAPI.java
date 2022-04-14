@@ -25,7 +25,7 @@ import com.musicmanager.message.ResponeMessage;
 import com.musicmanager.message.ResponeMusic;
 import com.musicmanager.service.MusicService;
 
-@CrossOrigin (origins = "*" , allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class MusicAPI {
 
@@ -49,12 +49,12 @@ public class MusicAPI {
 	}
 
 	@PutMapping(value = "/upload/{id}")
-	public ResponseEntity<ResponeMessage> updateMusic(@RequestParam("file") MultipartFile multipartFile,
-			@RequestParam("name") String name, @RequestParam("generes") String generes, @PathVariable String id) {
+	public ResponseEntity<ResponeMessage> updateMusic(@RequestParam("name") String name,
+			@RequestParam("generes") String generes, @PathVariable String id) {
 		String message = "";
 //		System.out.printf(name, multipartFile.toString(), generes);
 		try {
-			musicService.update(multipartFile, name, generes, Long.parseLong(id));
+			musicService.update(name, generes, Long.parseLong(id));
 			message = "Update Success";
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponeMessage(message));
 		} catch (Exception e) {
@@ -66,7 +66,7 @@ public class MusicAPI {
 	}
 
 	@DeleteMapping(value = "/delete")
-	public ResponseEntity<ResponeMessage> deleteMusic(@RequestBody long[] id) {
+	public ResponseEntity<ResponeMessage> deleteMusic(@RequestBody Long[] id) {
 		String message = "";
 		try {
 			musicService.deleteMusic(id);
@@ -86,8 +86,8 @@ public class MusicAPI {
 		List<ResponeMusic> musics = musicService.getAllMusic().map(dbFile -> {
 			String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
 					.path(dbFile.getId() + "").toUriString();
-			return new ResponeMusic(dbFile.getId(), dbFile.getName(),dbFile.getGeneres(),fileDownloadUri, dbFile.getDescription(),
-					dbFile.getFile().length);
+			return new ResponeMusic(dbFile.getId(), dbFile.getName(), dbFile.getGeneres(), fileDownloadUri,
+					dbFile.getDescription(), dbFile.getFile().length);
 		}).collect(Collectors.toList());
 		return ResponseEntity.status(HttpStatus.OK).body(musics);
 	}
@@ -95,8 +95,21 @@ public class MusicAPI {
 	@GetMapping(value = "/files/{id}")
 	public ResponseEntity<byte[]> getFile(@PathVariable String id) {
 		Music music = musicService.getMusic(Long.parseLong(id));
+////		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
+//				.path(music.getId() + "").toUriString();
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + music.getFileName() + "\"")
 				.body(music.getFile());
+	}
+
+	@GetMapping(value = "/musicdetail/{id}")
+	public ResponseEntity<ResponeMusic> getMusic(@PathVariable String id) {
+		Music music = musicService.getMusic(Long.parseLong(id));
+		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
+				.path(music.getId() + "").toUriString();
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + music.getFileName() + "\"")
+				.body(new ResponeMusic(music.getId(), music.getName(), music.getGeneres(), fileDownloadUri,
+						music.getDescription(), music.getFile().length));
 	}
 }

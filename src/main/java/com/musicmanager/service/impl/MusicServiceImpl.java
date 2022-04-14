@@ -44,24 +44,18 @@ public class MusicServiceImpl implements MusicService {
 	}
 
 	@Override
-	public void deleteMusic(long[] ids) {
+	public void deleteMusic(Long[] ids) {
 		for (long item : ids) {
 			musicRepository.delete(item);
 		}
 	}
 
 	@Override
-	public Music update(MultipartFile file, String name, String generes, Long id) throws IOException {
+	public Music update( String name, String generes, Long id) throws IOException {
 
 		Music music = musicRepository.findOne(id);
 		if (!name.equals(""))
 			music.setName(name);
-		if (file != null) {
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-			music.setFile(file.getBytes());
-			music.setDescription(file.getContentType());
-			music.setFileName(fileName);
-		}
 		if (!generes.equals(""))
 			music.setGeneres(generes);
 

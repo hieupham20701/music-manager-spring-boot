@@ -14,8 +14,8 @@ public interface MusicService {
 
 	public Stream<Music> getAllMusic();
 
-	public void deleteMusic(long[] ids);
+	public void deleteMusic(Long[] ids);
 
-	public Music update(MultipartFile file, String name, String generes, Long id) throws IOException;
+	public Music update(String name, String generes, Long id) throws IOException;
 
 }
