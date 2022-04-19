@@ -16,7 +16,8 @@ public class Music {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@Column(name = "name")
+
+	@Column(name = "name", length = 45)
 	private String name;
 	@Column(name = "description")
 	private String description;
@@ -28,11 +29,12 @@ public class Music {
 	@Column(name = "modified_date")
 	private Date modifiedDate;
 
-	@Column(name = "generes")
+	@Column(name = "generes", length = 45)
 	private String generes;
-	
+
 	@Column(name = "file_name")
 	private String fileName;
+
 	public Long getId() {
 		return id;
 	}
@@ -92,6 +94,5 @@ public class Music {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	
-	
+
 }

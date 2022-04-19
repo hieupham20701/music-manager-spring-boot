@@ -1,13 +1,19 @@
 package com.musicmanager.api;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,33 +30,36 @@ import com.musicmanager.entity.Music;
 import com.musicmanager.message.ResponeMessage;
 import com.musicmanager.message.ResponeMusic;
 import com.musicmanager.service.MusicService;
+import com.musicmanager.validation.ValidFile;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
+@Validated
 public class MusicAPI {
 
 	@Autowired
 	private MusicService musicService;
 
 	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<ResponeMessage> uploadMusic(@RequestParam("file") MultipartFile multipartFile,
-			@RequestParam("name") String name, @RequestParam("generes") String generes) {
+	public ResponseEntity<ResponeMessage> uploadMusic(@RequestParam("file") @Valid @ValidFile MultipartFile multipartFile,
+			@RequestParam("name") @NotEmpty @Size(max = 45) String name, @RequestParam("generes") @NotEmpty @Size(max = 45) String generes) {
 		String message = "";
 		try {
 			musicService.save(multipartFile, name, generes);
 			message = "Upload Success";
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponeMessage(message));
-		} catch (Exception e) {
-			// TODO: handle exception
-			message = "Could not upload the file";
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			message = "Could not upload the Songs";
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponeMessage(message));
 		}
 	}
 
 	@PutMapping(value = "/upload/{id}")
-	public ResponseEntity<ResponeMessage> updateMusic(@RequestParam("name") String name,
-			@RequestParam("generes") String generes, @PathVariable String id) {
+	public ResponseEntity<ResponeMessage> updateMusic(@RequestParam("name") @NotEmpty @Size(max = 45) String name,
+			@RequestParam("generes") @NotEmpty @Size(max = 45) String generes, @PathVariable String id) {
 		String message = "";
 //		System.out.printf(name, multipartFile.toString(), generes);
 		try {
