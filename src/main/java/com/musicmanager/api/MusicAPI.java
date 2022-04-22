@@ -1,8 +1,11 @@
 package com.musicmanager.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -120,5 +123,36 @@ public class MusicAPI {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + music.getFileName() + "\"")
 				.body(new ResponeMusic(music.getId(), music.getName(), music.getGeneres(), fileDownloadUri,
 						music.getDescription(), music.getFile().length));
+	}
+	@GetMapping(value = "/files/pages")
+	public ResponseEntity<Map<String, Object>> getAllMusicPaging(@RequestParam(required = false) String nameSearch,@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "4") int size){
+		List<Music> musics = new ArrayList<Music>();
+		Map<String, Object> mapMusic = musicService.getAllMusicPage(page, size, nameSearch);
+		for(Map.Entry<String, Object> entry : mapMusic.entrySet()) {
+			if(entry.getKey().equals("musics"))
+				musics = (List<Music>) entry.getValue();
+		}
+		Stream<Music> musicStream = musics.stream();
+		List<ResponeMusic> musicsRespone = musicStream.map(music -> {
+			String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
+					.path(music.getId() + "").toUriString();
+			return new ResponeMusic(music.getId(), music.getName(), music.getGeneres(), fileDownloadUri,
+					music.getDescription(), music.getFile().length);
+		}).collect(Collectors.toList());
+	
+		mapMusic.remove("musics");
+		mapMusic.put("musics", musicsRespone);
+		return ResponseEntity.ok().body(mapMusic);
+	}
+	
+	@GetMapping(value = "/files/name")
+	public ResponseEntity<List<ResponeMusic>> getListMusicByName(@RequestParam(required = false) String nameSearch){
+		List<ResponeMusic> musics = musicService.findMusicByName(nameSearch).map(dbFile -> {
+			String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
+					.path(dbFile.getId() + "").toUriString();
+			return new ResponeMusic(dbFile.getId(), dbFile.getName(), dbFile.getGeneres(), fileDownloadUri,
+					dbFile.getDescription(), dbFile.getFile().length);
+		}).collect(Collectors.toList());
+		return ResponseEntity.status(HttpStatus.OK).body(musics);
 	}
 }

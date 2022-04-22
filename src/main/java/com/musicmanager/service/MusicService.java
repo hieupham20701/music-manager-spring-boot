@@ -1,6 +1,7 @@
 package com.musicmanager.service;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -17,5 +18,8 @@ public interface MusicService {
 	public void deleteMusic(Long[] ids);
 
 	public Music update(String name, String generes, Long id) throws IOException;
-
+	
+	public Map<String, Object> getAllMusicPage(int page, int size, String nameSearch);
+	
+	public Stream<Music> findMusicByName(String name);
 }
